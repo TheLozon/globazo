@@ -92,6 +92,8 @@ body{
 .rrow .tt{font-weight:700; font-variant-numeric:tabular-nums; text-align:right}
 .rrow .tt small{display:block; font-weight:400; color:var(--muted); font-size:11px}
 .rrow.me{color:var(--accent)}
+.frm.inv .secondary{flex:1 1 0; text-align:center; justify-content:center}
+.wa{display:inline-flex; align-items:center; text-decoration:none}
 .msg{margin:0; font-size:13px; color:var(--accent)}
 .code{font-size:13px; color:var(--muted); display:flex; align-items:center; gap:8px; flex-wrap:wrap}
 .code b{color:var(--fg); letter-spacing:.12em; font-size:15px}
@@ -603,7 +605,7 @@ function renderRank(){
     h+='<div class="chips"><button type="button" class="chip" data-act="scope" data-v="global" aria-pressed="'+(rk.scope==="global")+'">General</button>';
     rk.groups.forEach(function(g){h+='<button type="button" class="chip" data-act="scope" data-v="'+esc(g.code)+'" aria-pressed="'+(rk.scope===g.code)+'">'+esc(g.name)+'</button>'});
     h+='</div><div class="seg"><button type="button" data-act="period" data-v="day" aria-pressed="'+(rk.period==="day")+'">Hoy</button><button type="button" data-act="period" data-v="all" aria-pressed="'+(rk.period==="all")+'">Acumulado</button></div>';
-    if(rk.scope!=="global")h+='<div class="code">Código para invitar: <b>'+esc(rk.scope)+'</b><button type="button" class="secondary sm" data-act="copycode">Copiar</button></div>';
+    if(rk.scope!=="global")h+='<div class="code">Código del grupo: <b>'+esc(rk.scope)+'</b></div><div class="frm inv"><button type="button" class="secondary" data-act="copyinv">Copiar invitación</button><a class="secondary wa" href="https://wa.me/?text='+encodeURIComponent(inviteText(rk.scope))+'" target="_blank" rel="noopener">Enviar por WhatsApp</a></div>';
     h+='<div class="rlist">';
     if(rk.busy)h+='<p class="empty">Cargando…</p>';
     else if(!rk.rows.length)h+='<p class="empty">Todavía no hay resultados.</p>';
@@ -625,13 +627,18 @@ $("#rank").addEventListener("click",function(ev){
   var a=b.getAttribute("data-act"),v=b.getAttribute("data-v");
   if(a==="scope"){rk.scope=v;loadRank()}
   else if(a==="period"){rk.period=v;loadRank()}
-  else if(a==="copycode"){try{navigator.clipboard.writeText(rk.scope).then(function(){b.textContent="Copiado"})}catch(e){}}
+  else if(a==="copyinv"){
+    var tx=inviteText(rk.scope),old=b.textContent;
+    function okc(){b.textContent="Invitación copiada";setTimeout(function(){b.textContent=old},1800)}
+    function nok(){rk.msg="No se pudo copiar. Copiá este texto: "+tx;renderRank()}
+    try{navigator.clipboard.writeText(tx).then(okc,nok)}catch(e){nok()}
+  }
   else if(a==="nick"){
     var n=($("#nick").value||"").trim();
     if(n.length<2){rk.msg="El apodo necesita al menos 2 letras.";renderRank();return}
     rpc("create_player",{p_nick:n}).then(function(r){
       player={id:r.id,secret:r.secret,nick:n};try{localStorage.setItem("gdar-player",JSON.stringify(player))}catch(e){}
-      rk.msg="";submitToday();loadGroups();loadRank();
+      rk.msg="";submitToday();loadGroups();loadRank();joinInvite();
     }).catch(fail);
   }
   else if(a==="mk"){
@@ -643,6 +650,16 @@ $("#rank").addEventListener("click",function(ev){
     rpc("join_group",q2).then(function(r){rk.scope=r.code;return rpc("my_groups",auth())}).then(function(g){rk.groups=g;loadRank()}).catch(fail);
   }
 });
+function inviteText(code){
+  var name=code;rk.groups.forEach(function(g){if(g.code===code)name=g.name});
+  return "Sumate a mi grupo «"+name+"» en Globazo, el desafío geográfico diario del deporte argentino. Entrá acá y quedás adentro: "+location.origin+location.pathname+"?g="+code+" (código del grupo: "+code+")";
+}
+var invite=null;try{var gm=new URLSearchParams(location.search).get("g");if(gm&&/^[A-Za-z0-9]{4,8}$/.test(gm))invite=gm.toUpperCase()}catch(e){}
+function joinInvite(){
+  if(!invite||!player)return;var c=invite,ok="";invite=null;
+  var q=auth();q.p_code=c;
+  rpc("join_group",q).then(function(r){rk.scope=r.code;ok="Te uniste al grupo "+r.name+".";return rpc("my_groups",auth())}).then(function(g){rk.groups=g;loadRank();rk.msg=ok}).catch(fail);
+}
 function setView(v){
   view=v;$("#tabPlay").setAttribute("aria-pressed",v==="play");$("#tabRank").setAttribute("aria-pressed",v==="rank");
   $("#card").hidden=v==="rank";$("#rank").hidden=v!=="rank";document.querySelector(".bottom").hidden=v==="rank";
@@ -653,6 +670,10 @@ if(RANK_ON){
   $("#tabPlay").onclick=function(){setView("play")};
   $("#tabRank").onclick=function(){setView("rank")};
   if(player)loadGroups();
+  if(invite){
+    setView("rank");
+    if(player)joinInvite();else{rk.msg="Te invitaron a un grupo. Elegí un apodo y te sumamos.";renderRank()}
+  }
 }
 
 if(!TOPO){$("#hint").textContent="No se pudo cargar el mapa."}
