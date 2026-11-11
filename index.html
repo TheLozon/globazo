@@ -505,7 +505,7 @@ function renderBtn(){
   if(finished){
     b.disabled=false;b.className="primary";
     b.textContent="Copiar resultado";b.onclick=copyShare;
-    var old=$("#extra");if(!old){var d=document.createElement("button");d.id="extra";d.type="button";d.className="secondary";d.textContent="Jugar una ronda de práctica";d.onclick=function(){this.remove();start("practica-"+Date.now()+"-"+Math.random(),true)};b.parentNode.insertBefore(d,b.nextSibling)}
+    
     return;
   }
   var ex=$("#extra");if(ex)ex.remove();
