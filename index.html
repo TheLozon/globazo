@@ -71,6 +71,11 @@ body{
 .sub{font-size:12px; color:var(--muted); text-transform:capitalize}
 .score{margin-left:auto; text-align:right; font-family:var(--font-display); font-weight:800; font-size:24px; line-height:1; font-variant-numeric:tabular-nums}
 .score small{font-family:var(--font-body); font-weight:600; font-size:11px; color:var(--muted); margin-left:4px; text-transform:uppercase; letter-spacing:.08em}
+.ico{flex:none; fill:none; stroke:currentColor; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round}
+.ico.big{width:52px; height:52px}
+.ico.sm{width:18px; height:18px; stroke-width:3.4}
+.qrow{display:flex; gap:14px; align-items:flex-start}
+.qrow .q{flex:1; min-width:0}
 .tag{margin:0; font-size:14px; color:var(--muted); text-wrap:balance}
 .pips{display:grid; grid-template-columns:repeat(5,1fr); gap:6px}
 .pip{height:6px; border-radius:3px; background:var(--line)}
@@ -244,6 +249,14 @@ var Q = [
 
 var DIFF = [3, 5, 4, 4, 4, 3, 2, 4, 2, 4, 3, 3, 5, 2, 2, 4, 5, 2, 2, 3, 3, 3, 2, 3, 4, 2, 4, 2, 5, 1, 1, 2, 3, 1, 2, 1, 2, 2, 1, 4, 2, 2, 2, 4, 2, 2, 3, 1, 5, 5, 4, 3, 3, 2, 4, 2, 2, 4, 3, 1, 1, 1, 4, 4, 3];
 var LEVELS = ["Muy fácil","Fácil","Media","Difícil","Muy difícil"];
+
+var ICON = {
+  futbol:'<circle cx="24" cy="24" r="20"/><path d="M24 15l8 6-3 9H19l-3-9z"/><path d="M24 15V4M32 21l11-3M29 30l7 9M19 30l-7 9M16 21L5 18"/>',
+  basquet:'<circle cx="24" cy="24" r="20"/><path d="M4 24h40M24 4v40"/><path d="M9 9c9 8 9 22 0 30M39 9c-9 8-9 22 0 30"/>',
+  tenis:'<circle cx="24" cy="24" r="20"/><path d="M8 9c10 7 10 23 0 30M40 9c-10 7-10 23 0 30"/>',
+  rugby:'<g transform="rotate(-40 24 24)"><ellipse cx="24" cy="24" rx="21" ry="12"/><path d="M12 24h24M18 19v10M24 19v10M30 19v10"/></g>'
+};
+function ico(k,cls){return '<svg class="ico '+cls+'" viewBox="0 0 48 48" aria-hidden="true" style="color:'+SPORTS[k].c+'">'+ICON[k]+'</svg>'}
 
 /* ---------- Utilidades ---------- */
 function isAR(q){return q[3]<-21 && q[3]>-56 && q[4]>-74 && q[4]<-53}
@@ -473,7 +486,7 @@ function render(){
 }
 function renderQuestion(){
   var q=cur(),sp=SPORTS[q[0]],lab=q[6]?sp.n+" · "+q[6]:sp.n;
-  var h='<div class="tagrow"><span class="dot" style="--c:'+sp.c+'"></span><span>'+lab+'</span><span class="qn">'+LEVELS[qi]+' · '+(qi+1)+' / 5</span></div><p class="q">'+q[1]+'</p>';
+  var h='<div class="tagrow"><span class="dot" style="--c:'+sp.c+'"></span><span>'+lab+'</span><span class="qn">'+LEVELS[qi]+' · '+(qi+1)+' / 5</span></div><div class="qrow'+'">'+ico(q[0],"big")+'<p class="q">'+q[1]+'</p></div>';
   if(locked){
     var g=guesses[qi];
     h+='<div class="reveal"><div class="place">'+q[2]+'</div><div class="stats"><span class="pts" style="color:'+BANDC[band(g.sc)]+'">+'+nf(g.sc)+'</span><span class="km">'+(g.km<1?"menos de 1":nf(g.km))+' km del lugar</span></div><p class="fact">'+q[5]+'</p></div>';
@@ -485,7 +498,7 @@ function renderResults(){
   var t=total(),sq="",rows="";
   guesses.forEach(function(g,i){
     var q=Q[qs[i]],sp=SPORTS[q[0]];sq+=BANDE[band(g.sc)];
-    rows+='<div class="row"><span class="dot" style="--c:'+sp.c+'"></span><span class="pl">'+(i+1)+'. '+q[2]+'</span><span class="kp"><b>'+nf(g.sc)+'</b><br>'+(g.km<1?"<1":nf(g.km))+' km</span></div>';
+    rows+='<div class="row">'+ico(q[0],"sm")+'<span class="pl">'+(i+1)+'. '+q[2]+'</span><span class="kp"><b>'+nf(g.sc)+'</b><br>'+(g.km<1?"<1":nf(g.km))+' km</span></div>';
   });
   var day=dayIndex(today())+1;
   shareText="Globazo"+(practice?" (práctica)":" #"+day)+"\n"+sq+"\n"+nf(t)+" / 25.000\n¿Ya hiciste el Globazo de hoy?";
