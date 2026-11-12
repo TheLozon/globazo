@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#08121f">
+<meta name="theme-color" content="#74acdf">
 <meta name="description" content="Todos los días, un nuevo desafío geográfico del deporte argentino.">
 <style>html{color-scheme:dark}body{margin:0}[hidden]{display:none!important}</style>
 <title>Globazo</title>
@@ -13,179 +13,206 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
 <style>
-/* Layout: panel de pregunta a la izquierda, globo/mapa a la derecha; en celular el mapa queda entre la pregunta y el botón. */
+/* Paleta: azul #3486cf, celeste #74acdf, blanco #f4f4f4, amarillo #f7cb66, dorado #efad0d. Juego en modo noche (azul profundo derivado del azul), portada en celeste. */
 :root{
-  --bg:#08121f; --fg:#e8f0f8; --muted:#93a9bc; --panel:#0f1d2f; --line:#223750;
-  --sea:#0c2239; --land:#1d3d5a; --land-line:#34607f; --arg:#3b86c2; --arg-line:#8cc6f2; --grat:#16324d;
-  --accent:#f4b21c; --accent-fg:#1d1603; --celeste:#6bb6ee; --pin-line:#08121f;
+  --blue:#3486cf; --sky:#74acdf; --paper:#f4f4f4; --sun-soft:#f7cb66; --sun:#efad0d;
+  --bg:#0a2038; --panel:#102c4d; --line:#22497a; --fg:#f4f4f4; --muted:#a8c3de; --ink:#0a2038;
+  --sea:#0a2744; --land:#2d73b3; --land-line:#74acdf; --adm:#f4f4f4; --grat:#17406b; --guess:#74acdf;
+  --accent:#efad0d; --accent-hi:#f7cb66; --accent-fg:#1a1203; --pin-line:#0a2038;
   --rugby:#4fc083; --tenis:#c3d23c; --futbol:#f07871; --basquet:#f2a064;
   --s1:#4fc083; --s2:#c3d23c; --s3:#f2a064; --s4:#f07871;
-  color-scheme:dark;
   --font-display:"Montserrat",system-ui,-apple-system,"Segoe UI",sans-serif;
   --font-body:"Montserrat",system-ui,-apple-system,"Segoe UI",sans-serif;
-}
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --bg:#08121f; --fg:#e8f0f8; --muted:#93a9bc; --panel:#0f1d2f; --line:#223750;
-    --sea:#0c2239; --land:#1d3d5a; --land-line:#34607f; --arg:#3b86c2; --arg-line:#8cc6f2; --grat:#16324d;
-    --accent:#f4b21c; --accent-fg:#1d1603; --celeste:#6bb6ee; --pin-line:#08121f;
-    --rugby:#4fc083; --tenis:#c3d23c; --futbol:#f07871; --basquet:#f2a064;
-    --s1:#4fc083; --s2:#c3d23c; --s3:#f2a064; --s4:#f07871;
-    color-scheme:dark;
-  }
-}
-:root[data-theme="dark"]{
-  --bg:#08121f; --fg:#e8f0f8; --muted:#93a9bc; --panel:#0f1d2f; --line:#223750;
-  --sea:#0c2239; --land:#1d3d5a; --land-line:#34607f; --arg:#3b86c2; --arg-line:#8cc6f2; --grat:#16324d;
-  --accent:#f4b21c; --accent-fg:#1d1603; --celeste:#6bb6ee; --pin-line:#08121f;
-  --rugby:#4fc083; --tenis:#c3d23c; --futbol:#f07871; --basquet:#f2a064;
-  --s1:#4fc083; --s2:#c3d23c; --s3:#f2a064; --s4:#f07871;
   color-scheme:dark;
 }
 *{box-sizing:border-box}
 html,body{height:100%}
 body{
   background:var(--bg); color:var(--fg); font-family:var(--font-body); font-size:15px; line-height:1.4;
-  padding-block:12px;
+  height:100vh; height:100dvh; overflow:hidden;
+  padding-block:10px;
+  padding-left:max(12px, env(safe-area-inset-left, 0px));
+  padding-right:max(12px, env(safe-area-inset-right, 0px));
+}
+button{font:inherit; cursor:pointer}
+button:focus-visible,a:focus-visible,.inp:focus-visible{outline:3px solid var(--sky); outline-offset:2px}
+
+/* ---------- Portada ---------- */
+.intro{
+  position:fixed; inset:0; z-index:30; overflow:auto; display:flex;
+  background:var(--sky); color:var(--ink);
+  padding-block:max(20px, env(safe-area-inset-top, 0px)) max(20px, env(safe-area-inset-bottom, 0px));
   padding-left:max(16px, env(safe-area-inset-left, 0px));
   padding-right:max(16px, env(safe-area-inset-right, 0px));
-  overflow-x:hidden;
 }
+.intro-in{margin:auto; width:100%; max-width:540px; display:flex; flex-direction:column; gap:18px; position:relative; z-index:1}
+.deco{position:absolute; right:-90px; top:-70px; width:320px; max-width:70vw; opacity:.5; pointer-events:none; z-index:0}
+.logo{display:flex; align-items:center; gap:12px}
+.logo .flag{width:46px; height:32px}
+.intro h1{margin:0; font-weight:800; font-size:clamp(52px,15vw,88px); line-height:.95; letter-spacing:-.03em}
+.kicker{margin:0; font-weight:800; font-size:clamp(20px,5.2vw,26px); line-height:1.15; text-wrap:balance}
+.lead{margin:0; font-weight:600; font-size:clamp(16px,4.2vw,18px); text-wrap:balance}
+.sportrow{display:flex; gap:10px; flex-wrap:wrap}
+.sportchip{display:flex; align-items:center; gap:8px; background:var(--paper); color:var(--ink); border-radius:999px; padding:7px 14px 7px 8px; font-weight:700; font-size:14px}
+.sportchip .ico{width:26px; height:26px; color:var(--blue)!important; stroke-width:3}
+.how{margin:0; padding:16px 16px 16px 16px; list-style:none; background:var(--paper); color:var(--ink); border-radius:16px; display:flex; flex-direction:column; gap:12px; counter-reset:s}
+.how li{display:flex; gap:12px; align-items:flex-start; font-weight:600; font-size:15px; counter-increment:s}
+.how li::before{content:counter(s); flex:none; width:26px; height:26px; border-radius:50%; background:var(--blue); color:var(--paper); display:grid; place-items:center; font-weight:800; font-size:14px}
+.play{
+  border:0; border-radius:16px; padding:18px 16px; width:100%;
+  background:var(--sun); color:var(--accent-fg); font-weight:800; font-size:24px; letter-spacing:.14em;
+  box-shadow:0 5px 0 rgba(10,32,56,.35); transition:transform .08s, box-shadow .08s, background .15s;
+}
+.play:hover{background:var(--sun-soft)}
+.play:active{transform:translateY(4px); box-shadow:0 1px 0 rgba(10,32,56,.35)}
+.intro .small{margin:0; font-size:13px; font-weight:600; text-align:center}
+
+/* ---------- Estilos del juego ---------- */
 .app{
-  height:100%; min-height:640px; max-width:1280px; margin:0 auto;
-  display:grid; gap:12px;
+  height:100%; max-width:1280px; margin:0 auto; display:grid; gap:10px;
   grid-template-columns:minmax(300px,390px) minmax(0,1fr);
   grid-template-rows:minmax(0,1fr) auto;
   grid-template-areas:"top stage" "bottom stage";
 }
-.top{grid-area:top; min-height:0; min-width:0; display:flex; flex-direction:column; gap:12px; overflow:auto}
-.bottom{grid-area:bottom; min-width:0; display:flex; flex-direction:column; gap:8px}
+.top{grid-area:top; min-height:0; min-width:0; display:flex; flex-direction:column; gap:10px; overflow:auto}
+.top>*{flex-shrink:0}
+.bottom{grid-area:bottom; min-width:0; display:flex; flex-direction:column; gap:6px}
 .stage{grid-area:stage; position:relative; min-width:0; min-height:0; border-radius:14px; overflow:hidden; background:var(--sea); border:1px solid var(--line); touch-action:none}
-@media (max-width:860px){
-  html,body{height:auto}
-  body{min-height:100vh; min-height:100dvh}
-  .app{height:auto; min-height:0; grid-template-columns:minmax(0,1fr); grid-template-rows:auto auto auto; grid-template-areas:"top" "stage" "bottom"}
-  .top{overflow:visible}
-  .stage{height:clamp(300px,52vh,560px); height:clamp(300px,52dvh,560px)}
-  .app.rank .stage{display:none}
-  .rlist{max-height:none}
-  .bottom{position:sticky; bottom:0; z-index:5; background:var(--bg); padding-top:8px; padding-bottom:calc(8px + env(safe-area-inset-bottom, 0px)); margin-bottom:-12px}
-}
-@media (max-width:560px){
-  .name{font-size:19px}
-  .score{font-size:20px}
-  .flag{width:28px; height:20px}
-  .tag{font-size:12px}
-  .card{padding:12px; gap:8px}
-  .q{font-size:19px}
-  .ico.big{width:40px; height:40px}
-  .reveal .pts{font-size:24px}
-  .total b{font-size:36px}
-  .bottom .note{display:none}
-  .primary{padding:13px 14px}
-  .tools{top:8px; right:8px}
-  .seg button{padding:7px 10px}
-  .hint{font-size:11px}
-}
+canvas#map{position:absolute; inset:0; width:100%; height:100%; display:block; cursor:crosshair; touch-action:none; user-select:none; -webkit-user-select:none}
 .brand{display:flex; align-items:center; gap:10px}
 .flag{flex:none; width:34px; height:24px; border-radius:3px; overflow:hidden; border:1px solid var(--line)}
-.name{font-family:var(--font-display); font-weight:800; font-size:22px; line-height:1; letter-spacing:.01em; text-transform:uppercase}
-.sub{font-size:12px; color:var(--muted); text-transform:capitalize}
-.score{margin-left:auto; text-align:right; font-family:var(--font-display); font-weight:800; font-size:24px; line-height:1; font-variant-numeric:tabular-nums}
-.score small{font-family:var(--font-body); font-weight:600; font-size:11px; color:var(--muted); margin-left:4px; text-transform:uppercase; letter-spacing:.08em}
-.ico{flex:none; fill:none; stroke:currentColor; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round}
-.ico.big{width:52px; height:52px}
-.ico.sm{width:18px; height:18px; stroke-width:3.4}
-.qrow{display:flex; gap:14px; align-items:flex-start}
+.name{font-weight:800; font-size:21px; line-height:1; letter-spacing:-.01em; text-transform:uppercase}
+.sub{font-size:12px; color:var(--muted)}
+.score{margin-left:auto; text-align:right; font-weight:800; font-size:24px; line-height:1; font-variant-numeric:tabular-nums}
+.score small{font-weight:600; font-size:11px; color:var(--muted); margin-left:4px; text-transform:uppercase; letter-spacing:.08em}
+.tag{margin:0; font-size:13px; color:var(--muted); text-wrap:balance}
+.pips{display:grid; grid-template-columns:repeat(5,1fr); gap:6px}
+.pip{height:6px; border-radius:3px; background:var(--line)}
+.pip.now{background:var(--sky)}
+.card{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:14px; display:flex; flex-direction:column; gap:10px; min-width:0}
+.tagrow{display:flex; align-items:center; gap:8px; font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--muted)}
+.dot{width:9px; height:9px; border-radius:50%; background:var(--c, var(--muted)); flex:none}
+.tagrow .qn{margin-left:auto; text-align:right}
+.qrow{display:flex; gap:12px; align-items:flex-start}
 .qrow .q{flex:1; min-width:0}
-.tabs{align-self:flex-start; width:100%}
+.q{font-weight:700; font-size:clamp(19px,2.2vw,24px); line-height:1.2; text-wrap:balance; margin:0}
+.ico{flex:none; fill:none; stroke:currentColor; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round}
+.ico.big{width:48px; height:48px}
+.ico.sm{width:18px; height:18px; stroke-width:3.4}
+.reveal{border-top:1px solid var(--line); padding-top:10px; display:flex; flex-direction:column; gap:4px}
+.reveal .place{font-weight:700}
+.reveal .stats{display:flex; align-items:baseline; gap:12px; flex-wrap:wrap}
+.reveal .pts{font-weight:800; font-size:26px; line-height:1; font-variant-numeric:tabular-nums}
+.reveal .km{color:var(--muted); font-size:14px; font-variant-numeric:tabular-nums}
+.reveal .fact{color:var(--muted); font-size:13px; margin:0}
+.primary{width:100%; border:0; border-radius:12px; padding:14px 16px; background:var(--accent); color:var(--accent-fg); font-weight:800; font-size:16px}
+.primary:hover:not(:disabled){background:var(--accent-hi)}
+.primary:disabled{background:var(--line); color:var(--muted); cursor:not-allowed}
+.secondary{border:1px solid var(--line); background:var(--panel); color:var(--fg); border-radius:10px; padding:10px 14px; font-weight:600}
+.secondary.sm{padding:5px 10px; font-size:12px}
+.note{margin:0; font-size:12px; color:var(--muted)}
+.tools{position:absolute; top:10px; right:10px; display:flex; gap:8px; align-items:center}
+.seg{display:flex; background:var(--panel); border:1px solid var(--line); border-radius:10px; overflow:hidden}
+.seg button{border:0; background:transparent; color:var(--muted); padding:8px 12px; font-weight:600; font-size:13px}
+.seg button[aria-pressed="true"]{background:var(--blue); color:var(--paper)}
+.tabs{width:100%}
 .tabs button{flex:1}
+.zoom{display:flex; flex-direction:column; position:absolute; right:10px; bottom:10px; background:var(--panel); border:1px solid var(--line); border-radius:10px; overflow:hidden}
+.zoom button{border:0; background:transparent; color:var(--fg); width:40px; height:40px; font-size:20px; line-height:1}
+.zoom button+button{border-top:1px solid var(--line)}
+.hint{position:absolute; left:10px; bottom:10px; max-width:calc(100% - 70px); background:var(--panel); color:var(--muted); border:1px solid var(--line); border-radius:8px; padding:6px 10px; font-size:12px; pointer-events:none}
+.total{display:flex; align-items:baseline; gap:8px}
+.total b{font-weight:800; font-size:44px; line-height:1; font-variant-numeric:tabular-nums}
+.total span{color:var(--muted)}
+.rows{display:flex; flex-direction:column}
+.row{display:grid; grid-template-columns:18px minmax(0,1fr) auto; gap:4px 10px; align-items:center; padding:8px 0; border-top:1px solid var(--line)}
+.row .pl{font-weight:600; min-width:0; overflow-wrap:anywhere; font-size:14px}
+.row .kp{text-align:right; font-variant-numeric:tabular-nums; font-size:12px; color:var(--muted)}
+.row .kp b{color:var(--fg); font-size:15px}
+.share{white-space:pre-wrap; font:13px/1.35 var(--font-body); background:var(--bg); border:1px solid var(--line); border-radius:10px; padding:10px; margin:0; user-select:all}
+.btnrow{display:flex; gap:8px; flex-wrap:wrap}
+.social a{flex:1 1 90px; text-align:center; text-decoration:none; border:1px solid var(--line); background:var(--panel); color:var(--fg); border-radius:10px; padding:10px 8px; font-weight:700; font-size:14px}
+.ask{font-weight:800; font-size:17px; line-height:1.2; margin:0}
 .chips{display:flex; flex-wrap:wrap; gap:6px}
 .chip{border:1px solid var(--line); background:transparent; color:var(--fg); border-radius:999px; padding:6px 12px; font-weight:600; font-size:13px}
-.chip[aria-pressed="true"]{background:var(--fg); color:var(--bg)}
+.chip[aria-pressed="true"]{background:var(--blue); border-color:var(--blue); color:var(--paper)}
 .inp{width:100%; min-width:0; border:1px solid var(--line); background:var(--bg); color:var(--fg); border-radius:10px; padding:10px 12px; font:inherit; font-size:16px}
-.inp:focus-visible{outline:3px solid var(--celeste); outline-offset:1px}
 .frm{display:flex; gap:8px}
 .frm .secondary{flex:none; white-space:nowrap}
+.frm.inv .secondary{flex:1 1 0; text-align:center; justify-content:center}
+.wa{display:inline-flex; align-items:center; text-decoration:none}
 .rlist{max-height:300px; overflow:auto}
 .rrow{display:grid; grid-template-columns:28px minmax(0,1fr) auto; gap:8px; padding:8px 0; border-top:1px solid var(--line); align-items:center}
 .rrow .pos{font-weight:800; color:var(--muted); font-variant-numeric:tabular-nums}
 .rrow .nm{overflow-wrap:anywhere}
 .rrow .tt{font-weight:700; font-variant-numeric:tabular-nums; text-align:right}
 .rrow .tt small{display:block; font-weight:400; color:var(--muted); font-size:11px}
-.rrow.me{color:var(--accent)}
-.frm.inv .secondary{flex:1 1 0; text-align:center; justify-content:center}
-.wa{display:inline-flex; align-items:center; text-decoration:none}
-.msg{margin:0; font-size:13px; color:var(--accent)}
+.rrow.me{color:var(--sun-soft)}
+.msg{margin:0; font-size:13px; color:var(--sun-soft)}
 .code{font-size:13px; color:var(--muted); display:flex; align-items:center; gap:8px; flex-wrap:wrap}
 .code b{color:var(--fg); letter-spacing:.12em; font-size:15px}
-.secondary.sm{padding:5px 10px; font-size:12px}
 .empty{margin:0; color:var(--muted); font-size:14px}
-.tag{margin:0; font-size:14px; color:var(--muted); text-wrap:balance}
-.pips{display:grid; grid-template-columns:repeat(5,1fr); gap:6px}
-.pip{height:6px; border-radius:3px; background:var(--line)}
-.pip.now{background:var(--fg); opacity:.55}
-.pip.done{opacity:1}
-.card{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:16px; display:flex; flex-direction:column; gap:10px; min-width:0}
-.tagrow{display:flex; align-items:center; gap:8px; font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--muted)}
-.dot{width:9px; height:9px; border-radius:50%; background:var(--c, var(--muted)); flex:none}
-.tagrow .qn{margin-left:auto}
-.q{font-family:var(--font-display); font-weight:700; font-size:clamp(20px,2.3vw,26px); line-height:1.2; text-wrap:balance; margin:0}
-.reveal{border-top:1px solid var(--line); padding-top:10px; display:flex; flex-direction:column; gap:6px}
-.reveal .place{font-weight:700}
-.reveal .stats{display:flex; align-items:baseline; gap:12px; flex-wrap:wrap}
-.reveal .pts{font-family:var(--font-display); font-weight:800; font-size:28px; line-height:1; font-variant-numeric:tabular-nums}
-.reveal .km{color:var(--muted); font-variant-numeric:tabular-nums}
-.reveal .fact{color:var(--muted); font-size:14px; margin:0}
-button{font:inherit; cursor:pointer}
-button:focus-visible{outline:3px solid var(--celeste); outline-offset:2px}
-.primary{
-  width:100%; border:0; border-radius:12px; padding:14px 16px; background:var(--accent); color:var(--accent-fg);
-  font-weight:700; font-size:16px;
+
+/* ---------- Celular: todo el juego entra en una pantalla, sin scroll de página ---------- */
+@media (max-width:860px){
+  body{padding-block:8px}
+  .app{grid-template-columns:minmax(0,1fr); grid-template-rows:auto minmax(0,1fr) auto; grid-template-areas:"top" "stage" "bottom"; gap:8px}
+  .top{overflow:visible; gap:8px}
+  .tag{display:none}
+  .name{font-size:18px}
+  .sub{font-size:11px}
+  .score{font-size:20px}
+  .flag{width:28px; height:20px}
+  .card{padding:11px 12px; gap:8px}
+  .q{font-size:18px}
+  .ico.big{width:38px; height:38px}
+  .reveal{padding-top:8px; gap:2px}
+  .reveal .pts{font-size:22px}
+  .bottom .note{display:none}
+  .primary{padding:13px 14px}
+  .seg button{padding:7px 10px}
+  .tools{top:8px; right:8px}
+  .zoom{right:8px; bottom:8px}
+  .zoom button{width:38px; height:38px}
+  .hint{left:8px; bottom:8px; font-size:11px}
+  .app.rank,.app.done{grid-template-rows:minmax(0,1fr) auto; grid-template-areas:"top" "bottom"}
+  .app.rank .stage,.app.done .stage{display:none}
+  .app.rank .top,.app.done .top{overflow:auto; -webkit-overflow-scrolling:touch}
+  .app.rank .bottom{display:none}
+  .rlist{max-height:none}
 }
-.primary:disabled{background:var(--line); color:var(--muted); cursor:not-allowed}
-.secondary{border:1px solid var(--line); background:var(--panel); color:var(--fg); border-radius:10px; padding:10px 14px; font-weight:600}
-.note{margin:0; font-size:12px; color:var(--muted)}
-.tools{position:absolute; top:10px; right:10px; display:flex; gap:8px; align-items:center}
-.seg{display:flex; background:var(--panel); border:1px solid var(--line); border-radius:10px; overflow:hidden}
-.seg button{border:0; background:transparent; color:var(--muted); padding:8px 12px; font-weight:600; font-size:13px}
-.seg button[aria-pressed="true"]{background:var(--fg); color:var(--bg)}
-.zoom{display:flex; flex-direction:column; position:absolute; right:10px; bottom:10px; background:var(--panel); border:1px solid var(--line); border-radius:10px; overflow:hidden}
-.zoom button{border:0; background:transparent; color:var(--fg); width:38px; height:38px; font-size:20px; line-height:1}
-.zoom button+button{border-top:1px solid var(--line)}
-.hint{position:absolute; left:10px; bottom:10px; max-width:calc(100% - 70px); background:var(--panel); color:var(--muted); border:1px solid var(--line); border-radius:8px; padding:6px 10px; font-size:12px}
-svg#map{position:absolute; inset:0; width:100%; height:100%; display:block; cursor:crosshair; user-select:none}
-.adm{fill:none; stroke:var(--land-line); stroke-width:.5}
-.sea{fill:var(--sea)} .grat{fill:none; stroke:var(--grat); stroke-width:.6}
-.land{fill:var(--land); stroke:var(--land-line); stroke-width:.6}
-.arg{fill:var(--arg); stroke:var(--arg-line); stroke-width:.9}
-.link{fill:none; stroke:var(--fg); stroke-width:2; stroke-dasharray:5 5; opacity:.8}
-.pin-g{fill:var(--celeste); stroke:var(--pin-line); stroke-width:3}
-.pin-a{fill:var(--accent); stroke:var(--pin-line); stroke-width:3}
-.pin-n{font:700 11px var(--font-body); fill:var(--accent-fg); text-anchor:middle; dominant-baseline:central; pointer-events:none}
-.pin-n.g{fill:var(--pin-line)}
-/* resultados */
-.total{display:flex; align-items:baseline; gap:8px}
-.total b{font-family:var(--font-display); font-weight:800; font-size:44px; line-height:1; font-variant-numeric:tabular-nums}
-.total span{color:var(--muted)}
-.rows{display:flex; flex-direction:column}
-.row{display:grid; grid-template-columns:14px minmax(0,1fr) auto; gap:4px 10px; align-items:center; padding:8px 0; border-top:1px solid var(--line)}
-.row .pl{font-weight:600; min-width:0; overflow-wrap:anywhere}
-.row .kp{text-align:right; font-variant-numeric:tabular-nums; font-size:13px; color:var(--muted)}
-.row .kp b{color:var(--fg); font-size:15px}
-.share{white-space:pre-wrap; font:13px/1.35 var(--font-body); background:var(--bg); border:1px solid var(--line); border-radius:10px; padding:10px; margin:0; user-select:all}
-.btnrow{display:flex; gap:8px; flex-wrap:wrap}
-.social a{flex:1 1 90px; text-align:center; text-decoration:none; border:1px solid var(--line); background:var(--panel); color:var(--fg); border-radius:10px; padding:10px 8px; font-weight:700; font-size:14px}
-.social a:focus-visible{outline:3px solid var(--celeste); outline-offset:2px}
-.ask{font-family:var(--font-display); font-weight:700; font-size:18px; line-height:1.2; margin:0}
-.btnrow .primary{flex:1 1 150px; width:auto}
+@media (max-width:860px) and (max-height:700px){
+  .reveal .fact{display:none}
+  .ico.big{display:none}
+  .tagrow{font-size:10px}
+}
 @media (prefers-reduced-motion: reduce){*{transition:none!important; animation:none!important}}
 </style>
 
-<div class="app">
+<section class="intro" id="intro">
+  <svg class="deco" viewBox="0 0 200 200" aria-hidden="true" fill="none" stroke="#f4f4f4" stroke-width="2"><circle cx="100" cy="100" r="92"/><ellipse cx="100" cy="100" rx="40" ry="92"/><ellipse cx="100" cy="100" rx="78" ry="92"/><path d="M8 100h184M20 58h160M20 142h160"/></svg>
+  <div class="intro-in">
+    <div class="logo">
+      <svg class="flag" viewBox="0 0 34 24" aria-hidden="true"><rect width="34" height="24" fill="#3486cf"/><rect y="8" width="34" height="8" fill="#f4f4f4"/><circle cx="17" cy="12" r="2.8" fill="#efad0d"/></svg>
+    </div>
+    <h1>Globazo</h1>
+    <p class="kicker">Deporte argentino + geografía. ¿Estás listo?</p>
+    <p class="lead">Todos los días, un nuevo desafío geográfico del deporte argentino.</p>
+    <div class="sportrow" id="sportrow"></div>
+    <ol class="how">
+      <li>Leé la pista: un hecho del rugby, el tenis, el fútbol o el básquet argentino.</li>
+      <li>Marcá en el globo o en el mapa dónde pasó. Cuanto más cerca, más puntos.</li>
+      <li>Son 5 preguntas por día, de muy fácil a muy difícil. Hasta 25.000 puntos.</li>
+    </ol>
+    <button type="button" class="play" id="play">JUGAR</button>
+    <p class="small" id="introNote">La ronda de hoy ya está lista.</p>
+  </div>
+</section>
+
+<div class="app" id="game" hidden>
   <div class="top">
     <div class="brand">
-      <svg class="flag" viewBox="0 0 34 24" aria-hidden="true"><rect width="34" height="24" fill="#74acdf"/><rect y="8" width="34" height="8" fill="#ffffff"/><circle cx="17" cy="12" r="2.6" fill="#f4b21c"/></svg>
+      <svg class="flag" viewBox="0 0 34 24" aria-hidden="true"><rect width="34" height="24" fill="#3486cf"/><rect y="8" width="34" height="8" fill="#f4f4f4"/><circle cx="17" cy="12" r="2.8" fill="#efad0d"/></svg>
       <div><div class="name">Globazo</div><div class="sub"><span id="date"></span></div></div>
       <div class="score"><span id="total">0</span><small>pts</small></div>
     </div>
@@ -196,7 +223,7 @@ svg#map{position:absolute; inset:0; width:100%; height:100%; display:block; curs
     <div id="rank" class="card" hidden></div>
   </div>
   <div class="stage" id="stage">
-    <svg id="map" role="img" aria-label="Mapa del mundo para marcar dónde ocurrió el hecho"></svg>
+    <canvas id="map" role="img" aria-label="Mapa del mundo para marcar dónde ocurrió el hecho"></canvas>
     <div class="tools">
       <div class="seg" role="group" aria-label="Vista">
         <button type="button" id="vGlobe" aria-pressed="true">Globo</button>
@@ -204,7 +231,7 @@ svg#map{position:absolute; inset:0; width:100%; height:100%; display:block; curs
       </div>
     </div>
     <div class="zoom"><button type="button" id="zIn" aria-label="Acercar">+</button><button type="button" id="zOut" aria-label="Alejar">−</button></div>
-    <div class="hint" id="hint">Arrastrá para mover, rueda para zoom. Tocá para marcar.</div>
+    <div class="hint" id="hint">Arrastrá para mover y tocá para marcar.</div>
   </div>
   <div class="bottom">
     <button class="primary" id="btn" type="button" disabled>Tocá el mapa para marcar</button>
@@ -351,62 +378,72 @@ function dailyPick(key){var n=dayIndex(key);return SCHEDULE[((n%365)+365)%365]}
 function band(sc){return sc>=4500?0:sc>=2500?1:sc>=1000?2:3}
 var BANDC=["var(--s1)","var(--s2)","var(--s3)","var(--s4)"], BANDE=["🟩","🟨","🟧","🟥"];
 
-/* ---------- Mapa ---------- */
-var world=null,ARGF=[],OTH=[];
-if(TOPO){
-  world=topojson.feature(TOPO,TOPO.objects.countries).features;
-  world.forEach(function(f){var n=f.properties.name;OTH.push(f)});
-}
-var svg=d3.select("#map"),stage=$("#stage");
-svg.html('<path class="sea" id="sea"/><path class="grat" id="grat"/><path class="land" id="oth"/><path class="adm" id="adm"/><path class="arg" id="arg"/><g id="lines"></g><g id="pins"></g>');
+/* ---------- Mapa (canvas: rápido en celulares) ---------- */
+var OTH=[];
+if(TOPO){topojson.feature(TOPO,TOPO.objects.countries).features.forEach(function(f){OTH.push(f)})}
+var OTHFC={type:"FeatureCollection",features:OTH},ADMGEO={type:"MultiLineString",coordinates:ADM};
+var stage=$("#stage"),cv=$("#map"),ctx=cv.getContext("2d");
+var dpr=Math.min(2,window.devicePixelRatio||1);
+var cs=getComputedStyle(document.documentElement);
+function cvar(n){return cs.getPropertyValue(n).trim()}
+var C={sea:cvar("--sea"),grat:cvar("--grat"),land:cvar("--land"),landLine:cvar("--land-line"),adm:cvar("--adm"),
+  guess:cvar("--guess"),ans:cvar("--accent"),pinLine:cvar("--pin-line"),link:cvar("--fg"),pinFg:cvar("--accent-fg"),font:cvar("--font-body")};
 var W=800,H=600,mode="globe",k=1,rot=[50,5],ox=0,oy=0;
 var SPHERE={type:"Sphere"},GRAT=d3.geoGraticule10();
 var pending=null,shown=[],locked=false;
-function flatBase(){var p=d3.geoNaturalEarth1().fitExtent([[6,6],[W-6,H-6]],SPHERE);return{s0:p.scale(),t0:p.translate()}}
+var baseC={w:0,h:0,b:null};
+function flatBase(){
+  if(baseC.b&&baseC.w===W&&baseC.h===H)return baseC.b;
+  var p=d3.geoNaturalEarth1().fitExtent([[6,6],[W-6,H-6]],SPHERE);
+  baseC={w:W,h:H,b:{s0:p.scale(),t0:p.translate()}};return baseC.b;
+}
 function proj(){
   if(mode==="globe"){var R=Math.min(W,H)/2-8;return{p:d3.geoOrthographic().rotate(rot).scale(R*k).translate([W/2,H/2]).clipAngle(90)}}
   var b=flatBase();return{p:d3.geoNaturalEarth1().scale(b.s0*k).translate([b.t0[0]+ox,b.t0[1]+oy]),b:b};
 }
-function visible(P,pt){if(mode!=="globe")return true;return d3.geoDistance(pt,[-rot[0],-rot[1]])<Math.PI/2-0.01}
-function draw(){
-  var P=proj(),p=P.p,path=d3.geoPath(p);
-  $("#sea").setAttribute("d",path(SPHERE));
-  $("#grat").setAttribute("d",path(GRAT)||"");
-  $("#oth").setAttribute("d",path({type:"FeatureCollection",features:OTH})||"");
-  var am=$("#adm");am.setAttribute("d",path({type:"MultiLineString",coordinates:ADM})||"");am.style.opacity=Math.min(0.95,0.3+0.12*k);
-  $("#arg").setAttribute("d",path({type:"FeatureCollection",features:ARGF})||"");
-  var L="",G="";
-  shown.forEach(function(s,i){
-    var d=path({type:"LineString",coordinates:[s.g,s.a]});if(d)L+='<path class="link" d="'+d+'"/>';
-  });
-  $("#lines").innerHTML=L;
-  function pin(pt,cls,r,label,lc){
-    if(!visible(P,pt))return"";var xy=p(pt);if(!xy||isNaN(xy[0]))return"";
-    return '<circle class="'+cls+'" cx="'+xy[0].toFixed(1)+'" cy="'+xy[1].toFixed(1)+'" r="'+r+'"/>'+(label?'<text class="pin-n '+lc+'" x="'+xy[0].toFixed(1)+'" y="'+xy[1].toFixed(1)+'">'+label+'</text>':"");
+function visible(pt){if(mode!=="globe")return true;return d3.geoDistance(pt,[-rot[0],-rot[1]])<Math.PI/2-0.01}
+function draw(fast){
+  var p=proj().p,path=d3.geoPath(p,ctx);
+  ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,H);
+  ctx.beginPath();path(SPHERE);ctx.fillStyle=C.sea;ctx.fill();
+  if(!fast){ctx.beginPath();path(GRAT);ctx.lineWidth=.6;ctx.strokeStyle=C.grat;ctx.stroke()}
+  ctx.beginPath();path(OTHFC);ctx.fillStyle=C.land;ctx.fill();
+  ctx.globalAlpha=.6;ctx.lineWidth=.6;ctx.strokeStyle=C.landLine;ctx.stroke();
+  if(!fast){ctx.beginPath();path(ADMGEO);ctx.globalAlpha=Math.min(.7,.18+.08*k);ctx.lineWidth=.6;ctx.strokeStyle=C.adm;ctx.stroke()}
+  ctx.globalAlpha=.85;ctx.setLineDash([5,5]);ctx.lineWidth=2;ctx.strokeStyle=C.link;
+  shown.forEach(function(s){ctx.beginPath();path({type:"LineString",coordinates:[s.g,s.a]});ctx.stroke()});
+  ctx.setLineDash([]);ctx.globalAlpha=1;
+  function pin(pt,fill,r,label){
+    if(!visible(pt))return;var xy=p(pt);if(!xy||isNaN(xy[0]))return;
+    ctx.beginPath();ctx.arc(xy[0],xy[1],r,0,6.2832);ctx.fillStyle=fill;ctx.fill();
+    ctx.lineWidth=3;ctx.strokeStyle=C.pinLine;ctx.stroke();
+    if(label){ctx.fillStyle=C.pinFg;ctx.font="800 11px "+C.font;ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(label,xy[0],xy[1]+.5)}
   }
   var multi=shown.length>1;
   shown.forEach(function(s,i){
-    G+=pin(s.g,"pin-g",multi?9:8,multi?(i+1):"","g");
-    G+=pin(s.a,"pin-a",multi?9:10,multi?(i+1):"","a");
+    pin(s.g,C.guess,multi?9:8,multi?String(i+1):"");
+    pin(s.a,C.ans,multi?9:10,multi?String(i+1):"");
   });
-  if(pending&&!locked)G+=pin(pending,"pin-g",9,"","g");
-  $("#pins").innerHTML=G;
+  if(pending&&!locked)pin(pending,C.guess,9,"");
 }
+var raf=0,interacting=false,idleT=0;
+function requestDraw(){if(raf)return;raf=requestAnimationFrame(function(){raf=0;draw(interacting)})}
+function interact(){interacting=true;clearTimeout(idleT);idleT=setTimeout(function(){interacting=false;draw(false)},150)}
 function resize(){
   W=Math.max(200,stage.clientWidth);H=Math.max(200,stage.clientHeight);
-  svg.attr("viewBox","0 0 "+W+" "+H);draw();
+  cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);baseC.b=null;draw(false);
 }
-if(window.ResizeObserver)new ResizeObserver(resize).observe(stage);else window.addEventListener("resize",resize);
+if(window.ResizeObserver)new ResizeObserver(function(){resize()}).observe(stage);else window.addEventListener("resize",resize);
 
 var reduce=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
 var anim=0;
 function animateTo(T,ms){
   cancelAnimationFrame(anim);
-  if(reduce||!ms){applyT(T,1);draw();return}
+  if(reduce||!ms){applyT(T,1);draw(false);return}
   var F={rot:rot.slice(),k:k,ox:ox,oy:oy},t0=performance.now();
   function step(now){
     var t=Math.min(1,(now-t0)/ms),e=d3.easeCubicInOut(t);
-    applyT(T,e,F);draw();if(t<1)anim=requestAnimationFrame(step);
+    applyT(T,e,F);draw(t<1);if(t<1)anim=requestAnimationFrame(step);
   }
   anim=requestAnimationFrame(step);
 }
@@ -417,19 +454,19 @@ function applyT(T,e,F){
   if(T.ox!=null){ox=F.ox+(T.ox-F.ox)*e;oy=F.oy+(T.oy-F.oy)*e}
 }
 function resetView(){
-  if(mode==="globe")animateTo({rot:[50,5],k:1},700);else animateTo({k:1,ox:0,oy:0},700);
+  if(mode==="globe")animateTo({rot:[50,5],k:1},600);else animateTo({k:1,ox:0,oy:0},600);
 }
 function focusOn(pts){
   if(mode==="globe"){
     var a=pts[0],b=pts[1],mid=d3.geoInterpolate(a,b)(0.5),th=d3.geoDistance(a,b),kk=1;
     if(th/2<1.2)kk=Math.min(14,Math.max(1,0.72/Math.sin(Math.max(th/2,0.003))));
-    animateTo({rot:[-mid[0],-mid[1]],k:kk},900);
+    animateTo({rot:[-mid[0],-mid[1]],k:kk},800);
   }else{
     var bs=flatBase(),pp=d3.geoNaturalEarth1().scale(bs.s0).translate(bs.t0);
     var qa=pp(pts[0]),qb=pp(pts[1]),mx=(qa[0]+qb[0])/2,my=(qa[1]+qb[1])/2;
     var dx=Math.abs(qa[0]-qb[0]),dy=Math.abs(qa[1]-qb[1]);
     var kk=Math.max(1,Math.min(16,0.6*W/Math.max(dx,50),0.6*H/Math.max(dy,50)));
-    animateTo({k:kk,ox:W/2-kk*(mx-bs.t0[0])-bs.t0[0],oy:H/2-kk*(my-bs.t0[1])-bs.t0[1]},900);
+    animateTo({k:kk,ox:W/2-kk*(mx-bs.t0[0])-bs.t0[0],oy:H/2-kk*(my-bs.t0[1])-bs.t0[1]},800);
   }
 }
 function zoomBy(f,mx,my){
@@ -439,16 +476,17 @@ function zoomBy(f,mx,my){
     mx=mx==null?W/2:mx;my=my==null?H/2:my;
     cx=mx-(mx-cx)*nk/k;cy=my-(my-cy)*nk/k;ox=cx-b.t0[0];oy=cy-b.t0[1];
   }
-  k=nk;draw();
+  k=nk;interact();requestDraw();
 }
 /* punteros: arrastrar, pellizcar, tocar */
 var ptrs=new Map(),moved=0,pinch0=0;
-svg.on("pointerdown",function(ev){
-  svg.node().setPointerCapture(ev.pointerId);ptrs.set(ev.pointerId,[ev.clientX,ev.clientY]);
+cv.addEventListener("pointerdown",function(ev){
+  try{cv.setPointerCapture(ev.pointerId)}catch(e){}
+  ptrs.set(ev.pointerId,[ev.clientX,ev.clientY]);
   if(ptrs.size===1)moved=0;else{var v=Array.from(ptrs.values());pinch0=Math.hypot(v[0][0]-v[1][0],v[0][1]-v[1][1]);moved=99}
   cancelAnimationFrame(anim);
 });
-svg.on("pointermove",function(ev){
+cv.addEventListener("pointermove",function(ev){
   if(!ptrs.has(ev.pointerId))return;
   var prev=ptrs.get(ev.pointerId);ptrs.set(ev.pointerId,[ev.clientX,ev.clientY]);
   if(ptrs.size===2){
@@ -456,21 +494,21 @@ svg.on("pointermove",function(ev){
     if(pinch0>0)zoomBy(d/pinch0);pinch0=d;return;
   }
   var dx=ev.clientX-prev[0],dy=ev.clientY-prev[1];moved+=Math.abs(dx)+Math.abs(dy);
-  if(moved<5)return;
+  if(moved<6)return;
   if(mode==="globe"){
     var R=Math.min(W,H)/2-8,sens=180/(Math.PI*R*k);
     rot=[rot[0]+dx*sens,Math.max(-90,Math.min(90,rot[1]-dy*sens))];
   }else{ox+=dx;oy+=dy}
-  draw();
+  interact();requestDraw();
 });
 function endPtr(ev){
   if(!ptrs.has(ev.pointerId))return;
   var wasSingle=ptrs.size===1;ptrs.delete(ev.pointerId);
-  if(wasSingle&&moved<5&&ev.type==="pointerup")clickAt(ev);
+  if(wasSingle&&moved<6&&ev.type==="pointerup")clickAt(ev);
   if(ptrs.size===1){moved=99}
 }
-svg.on("pointerup",endPtr);svg.on("pointercancel",endPtr);
-svg.on("wheel",function(ev){
+cv.addEventListener("pointerup",endPtr);cv.addEventListener("pointercancel",endPtr);
+cv.addEventListener("wheel",function(ev){
   ev.preventDefault();var r=stage.getBoundingClientRect();
   zoomBy(Math.exp(-ev.deltaY*0.0015),ev.clientX-r.left,ev.clientY-r.top);
 },{passive:false});
@@ -480,14 +518,14 @@ function clickAt(ev){
   var ll=proj().p.invert([x,y]);
   if(!ll||isNaN(ll[0])||isNaN(ll[1])||Math.abs(ll[1])>90)return;
   if(mode==="globe"&&d3.geoDistance(ll,[-rot[0],-rot[1]])>=Math.PI/2)return;
-  pending=ll;$("#hint").hidden=true;draw();renderBtn();
+  pending=ll;$("#hint").hidden=true;draw(false);renderBtn();
 }
 $("#zIn").onclick=function(){zoomBy(1.6)};
 $("#zOut").onclick=function(){zoomBy(1/1.6)};
 function setMode(m){
   mode=m;$("#vGlobe").setAttribute("aria-pressed",m==="globe");$("#vFlat").setAttribute("aria-pressed",m==="flat");
   if(m==="flat"){k=1;ox=0;oy=0}else{k=1;rot=[50,5]}
-  if(shown.length===1)focusOn([shown[0].g,shown[0].a]);else draw();
+  if(shown.length===1)focusOn([shown[0].g,shown[0].a]);else draw(false);
 }
 $("#vGlobe").onclick=function(){setMode("globe")};
 $("#vFlat").onclick=function(){setMode("flat")};
@@ -510,27 +548,27 @@ function start(seed,isPractice){
   newQuestion();
 }
 function newQuestion(){
-  pending=null;shown=[];locked=false;finished=false;
+  pending=null;shown=[];locked=false;finished=false;$("#game").classList.remove("done");
   $("#hint").hidden=false;
-  render();resetView();draw();
+  render();resetView();
 }
 function confirmGuess(){
   var q=cur(),a=[q[4],q[3]],km=hav(pending,a),sc=scoreOf(km,q);
   guesses.push({g:pending,km:km,sc:sc});save();
   locked=true;shown=[{g:pending,a:a}];
-  render();focusOn([pending,a]);draw();
+  render();focusOn([pending,a]);
 }
 function next(){
   qi++;
   if(qi>=5)finish();else newQuestion();
 }
 function finish(){
-  finished=true;locked=true;pending=null;submitToday();
+  finished=true;locked=true;pending=null;submitToday();$("#game").classList.add("done");
   shown=guesses.map(function(g,i){var q=Q[qs[i]];return{g:g.g,a:[q[4],q[3]]}});
   $("#hint").hidden=true;
   mode="flat";$("#vGlobe").setAttribute("aria-pressed","false");$("#vFlat").setAttribute("aria-pressed","true");
   k=1;ox=0;oy=0;
-  render();draw();
+  render();draw(false);
 }
 function render(){
   $("#total").textContent=nf(total());
@@ -541,7 +579,7 @@ function render(){
     else pips+='<div class="pip"></div>';
   }
   $("#pips").innerHTML=pips;
-  $("#date").textContent=practice?"ronda de práctica":new Intl.DateTimeFormat("es-AR",{timeZone:"America/Argentina/Buenos_Aires",weekday:"long",day:"numeric",month:"long"}).format(new Date());
+  var dt=practice?"ronda de práctica":new Intl.DateTimeFormat("es-AR",{timeZone:"America/Argentina/Buenos_Aires",weekday:"long",day:"numeric",month:"long"}).format(new Date());$("#date").textContent=dt.charAt(0).toUpperCase()+dt.slice(1);
   if(finished)renderResults();else renderQuestion();
   renderBtn();
 }
@@ -711,6 +749,16 @@ if(RANK_ON){
 if(!TOPO){$("#hint").textContent="No se pudo cargar el mapa."}
 resize();
 start(today(),false);
+
+/* ---------- Portada ---------- */
+(function(){
+  var row=$("#sportrow");
+  Object.keys(SPORTS).forEach(function(k2){row.insertAdjacentHTML("beforeend",'<span class="sportchip">'+ico(k2,"")+SPORTS[k2].n+'</span>')});
+  if(finished)$("#introNote").textContent="Ya jugaste la ronda de hoy. Tocá JUGAR para ver tu resultado.";
+  function enter(){$("#intro").hidden=true;$("#game").hidden=false;resize();if(finished)draw(false)}
+  $("#play").onclick=enter;
+  if(typeof invite!=="undefined"&&invite&&RANK_ON)enter();
+})();
 })();
 </script>
 
