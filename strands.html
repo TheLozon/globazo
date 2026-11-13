@@ -60,6 +60,13 @@ svg.lines{position:absolute; inset:0; width:100%; height:100%; pointer-events:no
 .done{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:12px; display:flex; flex-direction:column; gap:8px}
 .done h2{margin:0; font-size:18px; font-weight:800}
 .share{white-space:pre-wrap; font:13px/1.35 var(--font); background:var(--bg); border:1px solid var(--line); border-radius:10px; padding:8px 10px; margin:0; user-select:all}
+.cross{display:block; text-align:center; text-decoration:none; background:var(--sun); color:var(--accent-fg); border-radius:10px; padding:12px; font-weight:800; font-size:15px}
+.past{display:flex; flex-direction:column; gap:6px; font-size:13px}
+.chips{display:flex; flex-wrap:wrap; gap:6px}
+.chip{text-decoration:none; color:var(--fg); border:1px solid var(--line); background:var(--bg); border-radius:999px; padding:5px 10px; font-weight:600; font-size:12px; text-transform:capitalize}
+.chip.ok{border-color:var(--sun); color:var(--sun-soft)}
+.chip.cur{background:var(--blue); border-color:var(--blue); color:#fff}
+.chip.now{background:var(--sun); border-color:var(--sun); color:var(--accent-fg); text-transform:none; font-weight:800}
 .row{display:flex; gap:8px; flex-wrap:wrap}
 .row a,.row button{flex:1 1 110px; text-align:center; text-decoration:none; border:1px solid var(--line); background:var(--bg); color:var(--fg); border-radius:10px; padding:10px 8px; font-weight:700; font-size:14px}
 .row .main{background:var(--sun); border-color:var(--sun); color:var(--accent-fg)}
@@ -92,6 +99,49 @@ svg.lines{position:absolute; inset:0; width:100%; height:100%; pointer-events:no
 .logo .flag{width:46px; height:32px; border-radius:3px; border:1px solid rgba(10,32,56,.4)}
 @media (max-height:640px){ .clue{padding:6px 12px} .clue .t{font-size:18px} .sel{height:28px; font-size:18px} .done .share{display:none} }
 @media (prefers-reduced-motion: reduce){*{animation:none!important; transition:none!important}}
+
+.demo{background:#0a2038; border-radius:16px; padding:8px; box-shadow:0 5px 0 rgba(10,32,56,.3)}
+.demo svg{display:block; width:100%; height:auto; max-height:200px}
+.demo text{font-family:"Montserrat",system-ui,sans-serif}
+.dcap{margin:6px 4px 2px; min-height:18px; position:relative; color:#f4f4f4; font-weight:700; font-size:13px; text-align:center}
+.dcap span{position:absolute; inset:0; opacity:0}
+.how li{padding:7px 8px; margin:-7px -8px; border-radius:10px}
+.how{gap:14px}
+@keyframes hl1{0%,24%{background:rgba(116,172,223,.4)}25%,100%{background:transparent}}
+@keyframes hl2{0%,24%{background:transparent}25%,49%{background:rgba(116,172,223,.4)}50%,100%{background:transparent}}
+@keyframes hl3{0%,49%{background:transparent}50%,74%{background:rgba(116,172,223,.4)}75%,100%{background:transparent}}
+@keyframes hl4{0%,74%{background:transparent}75%,99%{background:rgba(116,172,223,.4)}100%{background:transparent}}
+.how li:nth-child(1){animation:hl1 12s infinite}
+.how li:nth-child(2){animation:hl2 12s infinite}
+.how li:nth-child(3){animation:hl3 12s infinite}
+.how li:nth-child(4){animation:hl4 12s infinite}
+@keyframes capA{0%,1%{opacity:0}3%,23%{opacity:1}25%,100%{opacity:0}}
+@keyframes capB{0%,25%{opacity:0}28%,48%{opacity:1}50%,100%{opacity:0}}
+@keyframes capC{0%,50%{opacity:0}53%,73%{opacity:1}75%,100%{opacity:0}}
+@keyframes capD{0%,75%{opacity:0}78%,97%{opacity:1}99%,100%{opacity:0}}
+.dcap .c1{animation:capA 12s infinite}.dcap .c2{animation:capB 12s infinite}.dcap .c3{animation:capC 12s infinite}.dcap .c4{animation:capD 12s infinite}
+.fb{transform-box:fill-box}
+@media (prefers-reduced-motion: reduce){.how li,.dcap span,.demo *{animation:none!important}.dcap .c3{opacity:1}}
+
+.cl circle{fill:transparent}
+.cl text{fill:#f4f4f4}
+@keyframes w1c{0%,34%{fill:transparent}40%,95%{fill:#3486cf}100%{fill:transparent}}
+@keyframes w2c{0%,59%{fill:transparent}65%,95%{fill:#efad0d}100%{fill:transparent}}
+@keyframes w2t{0%,59%{fill:#f4f4f4}65%,95%{fill:#1a1203}100%{fill:#f4f4f4}}
+@keyframes ringc{0%,76%{stroke:transparent}80%{stroke:#f7cb66}86%{stroke:transparent}90%{stroke:#f7cb66}96%,100%{stroke:transparent}}
+.w1 circle{animation:w1c 12s infinite}
+.w2 circle{animation:w2c 12s infinite}.w2 text{animation:w2t 12s infinite}
+.w3 circle{stroke:transparent;stroke-width:3;animation:ringc 12s infinite}
+@keyframes d1{0%,27%{stroke-dashoffset:100}38%,95%{stroke-dashoffset:0}98%,100%{stroke-dashoffset:0;opacity:0}}
+@keyframes d2{0%,52%{stroke-dashoffset:100}63%,95%{stroke-dashoffset:0}98%,100%{stroke-dashoffset:0;opacity:0}}
+.ln{fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:12;stroke-dasharray:100;stroke-dashoffset:100}
+.ln1{stroke:#3486cf;animation:d1 12s infinite}.ln2{stroke:#efad0d;animation:d2 12s infinite}
+.tr{fill:none;stroke:#74acdf;stroke-width:12;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:100;stroke-dashoffset:100;opacity:0}
+@keyframes tr1{0%,26%{stroke-dashoffset:100;opacity:0}27%{opacity:1}37%{stroke-dashoffset:0;opacity:1}39%,100%{stroke-dashoffset:0;opacity:0}}
+.tr1{animation:tr1 12s infinite}
+@keyframes pill{0%,76%{opacity:0;transform:translateY(6px)}80%,95%{opacity:1;transform:translateY(0)}98%,100%{opacity:0}}
+.pill{animation:pill 12s infinite}
+@media (prefers-reduced-motion: reduce){.ln{stroke-dashoffset:0}.w1 circle{fill:#3486cf}.w2 circle{fill:#efad0d}.w2 text{fill:#1a1203}}
 </style>
 <script>
 window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
@@ -104,7 +154,17 @@ window.va = window.va || function () { (window.vaq = window.vaq || []).push(argu
     <div class="logo"><svg class="flag" viewBox="0 0 34 24" aria-hidden="true"><rect width="34" height="24" fill="#3486cf"/><rect y="8" width="34" height="8" fill="#f4f4f4"/><circle cx="17" cy="12" r="2.8" fill="#efad0d"/></svg></div>
     <h1>Strands</h1>
     <p class="kicker">Sopa de letras dinámica del deporte argentino.</p>
-    <ol class="how">
+    <div class="demo" aria-hidden="true">
+<svg viewBox="0 0 240 176">
+ <polyline class="ln ln1" pathLength="100" points="20,20 60,20 100,20 140,20 180,20"/>
+ <polyline class="ln ln2" pathLength="100" points="20,140 60,140 100,140 140,140 180,140 220,140"/>
+ <polyline class="tr tr1" pathLength="100" points="20,20 60,20 100,20 140,20 180,20"/>
+ <g class="cl w1"><circle cx="20" cy="20" r="16"/><text x="20" y="25.5" text-anchor="middle" font-size="17" font-weight="800">V</text></g><g class="cl w1"><circle cx="60" cy="20" r="16"/><text x="60" y="25.5" text-anchor="middle" font-size="17" font-weight="800">I</text></g><g class="cl w1"><circle cx="100" cy="20" r="16"/><text x="100" y="25.5" text-anchor="middle" font-size="17" font-weight="800">L</text></g><g class="cl w1"><circle cx="140" cy="20" r="16"/><text x="140" y="25.5" text-anchor="middle" font-size="17" font-weight="800">A</text></g><g class="cl w1"><circle cx="180" cy="20" r="16"/><text x="180" y="25.5" text-anchor="middle" font-size="17" font-weight="800">S</text></g><g class="cl "><circle cx="220" cy="20" r="16"/><text x="220" y="25.5" text-anchor="middle" font-size="17" font-weight="800">O</text></g><g class="cl w3"><circle cx="20" cy="60" r="16"/><text x="20" y="65.5" text-anchor="middle" font-size="17" font-weight="800">T</text></g><g class="cl w3"><circle cx="60" cy="60" r="16"/><text x="60" y="65.5" text-anchor="middle" font-size="17" font-weight="800">E</text></g><g class="cl w3"><circle cx="100" cy="60" r="16"/><text x="100" y="65.5" text-anchor="middle" font-size="17" font-weight="800">N</text></g><g class="cl w3"><circle cx="140" cy="60" r="16"/><text x="140" y="65.5" text-anchor="middle" font-size="17" font-weight="800">I</text></g><g class="cl w3"><circle cx="180" cy="60" r="16"/><text x="180" y="65.5" text-anchor="middle" font-size="17" font-weight="800">S</text></g><g class="cl "><circle cx="220" cy="60" r="16"/><text x="220" y="65.5" text-anchor="middle" font-size="17" font-weight="800">C</text></g><g class="cl "><circle cx="20" cy="100" r="16"/><text x="20" y="105.5" text-anchor="middle" font-size="17" font-weight="800">R</text></g><g class="cl "><circle cx="60" cy="100" r="16"/><text x="60" y="105.5" text-anchor="middle" font-size="17" font-weight="800">A</text></g><g class="cl "><circle cx="100" cy="100" r="16"/><text x="100" y="105.5" text-anchor="middle" font-size="17" font-weight="800">Q</text></g><g class="cl "><circle cx="140" cy="100" r="16"/><text x="140" y="105.5" text-anchor="middle" font-size="17" font-weight="800">U</text></g><g class="cl "><circle cx="180" cy="100" r="16"/><text x="180" y="105.5" text-anchor="middle" font-size="17" font-weight="800">E</text></g><g class="cl "><circle cx="220" cy="100" r="16"/><text x="220" y="105.5" text-anchor="middle" font-size="17" font-weight="800">T</text></g><g class="cl w2"><circle cx="20" cy="140" r="16"/><text x="20" y="145.5" text-anchor="middle" font-size="17" font-weight="800">D</text></g><g class="cl w2"><circle cx="60" cy="140" r="16"/><text x="60" y="145.5" text-anchor="middle" font-size="17" font-weight="800">O</text></g><g class="cl w2"><circle cx="100" cy="140" r="16"/><text x="100" y="145.5" text-anchor="middle" font-size="17" font-weight="800">R</text></g><g class="cl w2"><circle cx="140" cy="140" r="16"/><text x="140" y="145.5" text-anchor="middle" font-size="17" font-weight="800">A</text></g><g class="cl w2"><circle cx="180" cy="140" r="16"/><text x="180" y="145.5" text-anchor="middle" font-size="17" font-weight="800">D</text></g><g class="cl w2"><circle cx="220" cy="140" r="16"/><text x="220" y="145.5" text-anchor="middle" font-size="17" font-weight="800">A</text></g>
+ <g class="pill"><rect x="78" y="172" width="84" height="0" fill="none"/></g>
+</svg>
+<div class="dcap"><span class="c1">Buscá las palabras del tema</span><span class="c2">Unilas con el dedo</span><span class="c3">La palabra clave, en dorado</span><span class="c4">¿Trabado? Usá una pista</span></div>
+</div>
+<ol class="how">
       <li>Encontrá las palabras escondidas que tienen que ver con el tema del día.</li>
       <li>Unilas arrastrando el dedo por letras vecinas, también en diagonal. O tocá letra por letra y volvé a tocar la última para enviar.</li>
       <li>Una palabra clave, en dorado, resume el tema y cruza todo el tablero. Las palabras usan todas las letras y no se cruzan entre sí.</li>
@@ -138,8 +198,9 @@ window.va = window.va || function () { (window.vaq = window.vaq || []).push(argu
     <div class="row">
       <button class="main" id="copy" type="button">Copiar resultado</button>
       <a id="tw" href="#" target="_blank" rel="noopener">Twitter / X</a>
-      <a href="/globazo.html">Jugar Globazo</a>
-    </div>
+      </div>
+    <a class="cross" href="/globazo.html">Ahora jugá el Globazo de hoy →</a>
+    <div class="past" id="past"></div>
   </section>
 </main>
 <script>
@@ -150,7 +211,9 @@ var EPOCH="2026-11-11",R=8,C=6;
 function $(s){return document.querySelector(s)}
 function today(){return new Intl.DateTimeFormat("en-CA",{timeZone:"America/Argentina/Buenos_Aires",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date())}
 function mod(a,n){return((a%n)+n)%n}
-var dayKey=today(),idx=Math.round((Date.parse(dayKey)-Date.parse(EPOCH))/864e5);
+var qd=(location.search.match(/[?&]d=(\d{4}-\d{2}-\d{2})/)||[])[1];
+if(!(qd&&qd<today()&&qd>=EPOCH))qd=null;
+var dayKey=qd||today(),idx=Math.round((Date.parse(dayKey)-Date.parse(EPOCH))/864e5);
 var theme=PUZ[mod(idx,PUZ.length)],board=theme.boards[mod(Math.floor(idx/PUZ.length),theme.boards.length)];
 var L=board.letters,WORDS=board.words,N=WORDS.length;
 var store="strands2:"+dayKey,st={found:[],hints:0,hint:-1,order:[]};
@@ -261,6 +324,20 @@ $("#copy").onclick=function(){
   try{navigator.clipboard.writeText(shareText).then(ok,fb)}catch(e){fb()}
 };
 $("#play").onclick=function(){$("#intro").hidden=true};
+if(qd)$("#intro").hidden=true;
+(function(){
+  var td=today(),h='',n=0;
+  if(qd)h+='<a class="chip now" href="/strands.html">Volver a hoy</a>';
+  for(var i=1;i<=14;i++){
+    var k=new Date(Date.parse(td)-864e5*i).toISOString().slice(0,10);
+    if(k<EPOCH)break;n++;
+    var ix=Math.round((Date.parse(k)-Date.parse(EPOCH))/864e5),th=PUZ[mod(ix,PUZ.length)],b=th.boards[mod(Math.floor(ix/PUZ.length),th.boards.length)],ok=false;
+    try{var o=JSON.parse(localStorage.getItem("strands2:"+k));ok=o&&o.found&&o.found.length===b.words.length}catch(e){}
+    var lab=new Intl.DateTimeFormat("es-AR",{timeZone:"UTC",weekday:"short",day:"numeric",month:"numeric"}).format(new Date(Date.parse(k)));
+    h+='<a class="chip'+(ok?" ok":"")+(k===dayKey?" cur":"")+'" href="/strands.html?d='+k+'">'+lab+(ok?' ✓':'')+'</a>';
+  }
+  if(n)$("#past").innerHTML='<b>'+(qd?"Otros días":"Jugá días anteriores")+'</b><div class="chips">'+h+'</div>';
+})();
 render();
 })();
 </script>
