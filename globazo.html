@@ -191,6 +191,19 @@ canvas#map{position:absolute; inset:0; width:100%; height:100%; display:block; c
 .chip.ok{border-color:var(--sun); color:var(--sun-soft)}
 .chip.cur{background:var(--blue); border-color:var(--blue); color:#fff}
 .chip.now{background:var(--sun); border-color:var(--sun); color:var(--accent-fg); text-transform:none; font-weight:800}
+.protag{margin-left:6px; background:var(--sun); color:var(--accent-fg); border-radius:6px; padding:1px 6px; font-size:.6em; vertical-align:middle; letter-spacing:.06em}
+.bonus{display:flex; flex-direction:column; gap:6px; margin-top:6px; padding-top:8px; border-top:1px dashed var(--line)}
+.bq{font-size:14px; line-height:1.3}
+.bq b{color:var(--sun)}
+.opts{display:grid; grid-template-columns:1fr 1fr; gap:6px}
+.opt{border:1px solid var(--line); background:var(--panel); color:var(--fg); border-radius:10px; padding:8px 8px; font-weight:600; font-size:13px; line-height:1.2; text-align:center; font-family:inherit}
+.opt:not(:disabled):active{background:var(--blue)}
+.opt.good{background:#1f7a4a; border-color:#2fb06b; color:#fff}
+.opt.bad{background:#8a2c2c; border-color:#d65a5a; color:#fff}
+.bres{font-weight:700; font-size:13px; color:var(--sun-soft)}
+.mult{font-weight:700; color:var(--sun); font-size:14px}
+.xm{font-style:normal; color:var(--sun); font-weight:800; font-size:12px}
+@media (max-width:420px){.opts{grid-template-columns:1fr}}
 .ask{font-weight:800; font-size:17px; line-height:1.2; margin:0}
 .chips{display:flex; flex-wrap:wrap; gap:6px}
 .chip{border:1px solid var(--line); background:transparent; color:var(--fg); border-radius:999px; padding:6px 12px; font-weight:600; font-size:13px}
@@ -294,6 +307,7 @@ canvas#map{position:absolute; inset:0; width:100%; height:100%; display:block; c
       <li>Armá grupos con tus amigos y competí en un ranking mundial.</li>
     </ol>
     <button type="button" class="play" id="play">JUGAR</button>
+    <p class="small" id="proNote"></p>
     <p class="small" id="introNote">La ronda de hoy ya está lista.</p>
     <p class="small"><a class="altlink" href="/">← Volver a ArgenJuegos</a></p>
   </div>
@@ -303,7 +317,7 @@ canvas#map{position:absolute; inset:0; width:100%; height:100%; display:block; c
   <div class="top">
     <div class="brand">
       <svg class="flag" viewBox="0 0 34 24" aria-hidden="true"><rect width="34" height="24" fill="#3486cf"/><rect y="8" width="34" height="8" fill="#f4f4f4"/><circle cx="17" cy="12" r="2.8" fill="#efad0d"/></svg>
-      <div><div class="name">Globazo</div><div class="sub"><span id="date"></span></div></div>
+      <div><div class="name">Globazo<span class="protag" id="protag" hidden>PRO</span></div><div class="sub"><span id="date"></span></div></div>
       <div class="score"><span id="total">0</span><small>pts</small></div>
     </div>
     <p class="tag">Todos los días, un nuevo desafío geográfico del deporte argentino.</p>
@@ -425,6 +439,7 @@ var Q = [
 ];
 
 var DIFF = [3, 5, 4, 4, 4, 3, 2, 4, 2, 4, 3, 3, 5, 2, 2, 4, 5, 2, 2, 3, 3, 3, 2, 3, 4, 2, 4, 2, 5, 1, 1, 2, 3, 1, 2, 1, 2, 2, 1, 4, 2, 2, 2, 4, 2, 2, 3, 1, 5, 5, 4, 3, 3, 2, 4, 2, 2, 4, 3, 1, 1, 1, 4, 4, 3];
+var BONUS=[["¿Cuántos puntos vale un try en rugby?","5","3","6","7"],["¿Cómo se llama la danza maorí que hacen los All Blacks antes de cada partido?","Haka","Kapa","Waka","Tiki"],["¿Cómo se apoda a la selección francesa de rugby?","Les Bleus","Les Coqs","Les Rouges","Les Lions"],["¿Qué selección ganó el Mundial de Rugby 2007?","Sudáfrica","Inglaterra","Nueva Zelanda","Australia"],["¿Qué planta es símbolo de Irlanda?","El trébol","El cardo","La rosa","El helecho"],["¿Qué flor lleva en el pecho la camiseta de Inglaterra?","Una rosa","Un cardo","Un trébol","Un tulipán"],["¿Cómo se llama el equipo nacional de rugby de Sudáfrica?","Springboks","Wallabies","Lions","Cheetahs"],["¿Cuántos jugadores por equipo hay en cancha en el rugby seven?","7","5","9","15"],["¿En qué año debutaron los Jaguares en el Super Rugby?","2016","2012","2014","2018"],["¿En qué isla de Nueva Zelanda queda Christchurch?","Isla Sur","Isla Norte","Isla Stewart","Isla Waiheke"],["¿Qué significa la sigla URBA?","Unión de Rugby de Buenos Aires","Unión Regional de Básquet Argentino","Unidad de Rugby y Básquet Argentina","Unión Rioplatense de Bochas y Atletismo"],["¿Qué animal aparece en la bandera de Gales?","Un dragón","Un león","Un unicornio","Un águila"],["¿Qué selección ganó el Mundial de Rugby de 1999?","Australia","Francia","Sudáfrica","Nueva Zelanda"],["¿Con qué mano jugaba al tenis Guillermo Vilas?","Con la izquierda","Con la derecha","Con las dos","Con ninguna: usaba revés a dos manos"],["¿Qué superficie tiene Roland Garros?","Polvo de ladrillo","Césped","Cancha dura","Alfombra sintética"],["¿De qué tipo es la superficie actual del US Open?","Cancha dura","Polvo de ladrillo","Césped","Arcilla verde"],["¿Con qué superficie se juega hoy el Abierto de Australia?","Cancha dura","Césped","Polvo de ladrillo","Parquet"],["¿A qué jugador venció Del Potro en las semifinales del US Open 2009?","Rafael Nadal","Novak Djokovic","Andy Murray","Andy Roddick"],["¿Cuántos títulos de Grand Slam ganó Del Potro?","1","2","3","0"],["¿En qué ronda venció Del Potro a Djokovic en los Juegos de Río 2016?","Primera ronda","Octavos de final","Cuartos de final","Semifinales"],["¿Quién era el capitán de Argentina cuando ganó la Copa Davis 2016?","Daniel Orsanic","Alberto Mancini","Gastón Gaudio","Guillermo Coria"],["¿Quién era el capitán argentino en la final de la Copa Davis 2008?","Alberto Mancini","Daniel Orsanic","José Luis Clerc","Javier Frana"],["¿Cuál era el apodo de Gastón Gaudio?","El Gato","El Mago","El Rey David","La Foca"],["¿Cuántos títulos de Grand Slam individuales ganó Gabriela Sabatini?","1","2","3","0"],["¿Cuántos jugadores compiten en singles en las ATP Finals?","8","4","16","12"],["¿Qué superficie tiene Wimbledon?","Césped","Polvo de ladrillo","Cancha dura","Parquet"],["¿Cuál era el apodo de Guillermo Coria?","El Mago","El Gato","El Zurdo","El Rey David"],["¿Qué superficie tiene el Argentina Open?","Polvo de ladrillo","Cancha dura","Césped","Carpeta"],["¿Cuál es el apodo de David Nalbandian?","El Rey David","El Gato","El Mago","El Zurdo"],["¿Cómo se llama a los hinchas de Boca Juniors?","Xeneizes","Gallinas","Cebollitas","Millonarios"],["¿A qué club pertenece el estadio Monumental, sede de la final de 1978?","River Plate","Boca Juniors","Vélez Sarsfield","San Lorenzo"],["¿Qué colores tiene la camiseta de Godoy Cruz?","Azul y blanco","Rojo y blanco","Verde y blanco","Amarillo y azul"],["¿En qué club debutó Maradona en Primera División?","Argentinos Juniors","Boca Juniors","Newell's Old Boys","Lanús"],["¿Cuántas Champions League ganó Messi con el Barcelona?","4","3","5","2"],["¿Cómo se llamaba el arquero inglés al que Maradona le hizo los dos goles en 1986?","Peter Shilton","Gordon Banks","David Seaman","Joe Hart"],["¿Qué jugador ganó la Bota de Oro del Mundial 2022?","Kylian Mbappé","Lionel Messi","Olivier Giroud","Julián Álvarez"],["¿Cuántos años pasaron entre la Copa América de 1993 y la de 2021?","28","20","32","36"],["¿Cuántas Copa América ganó Argentina con la de 2024?","16","15","14","12"],["¿Qué dos campeones se enfrentan en la Finalissima?","Copa América y Eurocopa","Copa América y Mundial","Copa Libertadores y Champions League","Eurocopa y Mundial"],["¿Quién era el entrenador de Argentina cuando debutó Messi en 2005?","José Pekerman","Marcelo Bielsa","Diego Maradona","Alfio Basile"],["¿Quién era el entrenador de River en la final de la Libertadores 2018?","Marcelo Gallardo","Ramón Díaz","Gustavo Alfaro","Néstor Pitana"],["¿Qué otro título europeo ganó el Napoli de Maradona en 1989?","La Copa UEFA","La Champions League","La Recopa","La Supercopa de Europa"],["¿Quién fue el máximo goleador del Mundial 1930?","Guillermo Stábile","Pedro Cea","Héctor Scarone","Luis Monti"],["¿Quién era el entrenador de Argentina cuando ganó la Copa América 1993?","Alfio Basile","Carlos Bilardo","Daniel Passarella","César Menotti"],["¿Quién era el entrenador de Argentina en los Juegos Olímpicos de Atenas 2004?","Marcelo Bielsa","Sergio Batista","José Pekerman","Alfio Basile"],["¿Quién era el entrenador de Argentina en los Juegos Olímpicos de Pekín 2008?","Sergio Batista","Marcelo Bielsa","Diego Maradona","José Pekerman"],["¿Quién era el entrenador de Argentina campeona del mundo en 1978?","César Luis Menotti","Carlos Bilardo","Alfio Basile","Marcelo Bielsa"],["¿Cuál es el apodo de Independiente?","El Rojo","La Academia","El Millonario","El Ciclón"],["¿En qué club español jugó Lionel Scaloni?","Deportivo La Coruña","Real Madrid","Valencia","Sevilla"],["¿En qué club jugaba Julián Álvarez cuando Argentina ganó el Mundial 2022?","Manchester City","River Plate","Atlético de Madrid","Chelsea"],["¿Con qué club inglés ganó Tevez la Champions League 2008?","Manchester United","Manchester City","Chelsea","West Ham"],["¿Cuál es el nombre de pila del Dibu Martínez?","Emiliano","Sergio","Franco","Gerónimo"],["¿Quién era el entrenador de Boca cuando ganó la Intercontinental 2000?","Carlos Bianchi","Alfio Basile","Miguel Ángel Russo","Carlos Ischia"],["¿Qué número usó Ginóbili en los San Antonio Spurs?","20","10","5","9"],["¿Qué equipo europeo de básquet ganó la Euroliga 2001 con Ginóbili?","Kinder Bologna","Real Madrid","Olympiacos","Panathinaikos"],["¿Quién era el entrenador de los Spurs durante la era de Ginóbili?","Gregg Popovich","Phil Jackson","Steve Kerr","Erik Spoelstra"],["¿A qué selección le ganó Argentina en las semifinales de Atenas 2004?","Estados Unidos","España","Lituania","Italia"],["¿Qué jugador fue elegido MVP del Mundial de básquet 2002?","Dirk Nowitzki","Manu Ginóbili","Yao Ming","Peja Stojaković"],["¿Quién fue elegido MVP del Mundial de básquet 2019?","Ricky Rubio","Marc Gasol","Luis Scola","Facundo Campazzo"],["¿Quién era el entrenador de Argentina campeona del Mundial de básquet 1950?","Jorge Canavesi","Rubén Magnano","Julio Lamas","Sergio Hernández"],["¿Con qué equipo de la NBA debutó Luis Scola?","Houston Rockets","San Antonio Spurs","Phoenix Suns","Indiana Pacers"],["¿En qué club de Mar del Plata debutó Campazzo?","Peñarol","Quilmes","Hindú","Lanús"],["¿Cuál es el apodo de Santiago del Estero?","Madre de Ciudades","Ciudad de la Furia","La Perla del Norte","Ciudad de los Naranjos"],["¿Qué recurso natural es la base de la economía de Comodoro Rivadavia?","El petróleo","El litio","El carbón","El oro"],["¿Cómo se llama la cancha de Peñarol en Mar del Plata?","Polideportivo Islas Malvinas","Luna Park","Estadio Obras","Polideportivo Roberto Pando"]];
 var LEVELS = ["Muy fácil","Fácil","Media","Difícil","Muy difícil"];
 
 var ICON = {
@@ -624,11 +639,11 @@ $("#vFlat").onclick=function(){setMode("flat")};
 var qs=[],qi=0,guesses=[],finished=false,practice=false,seedKey="",storeKey="";
 function load(key){try{return JSON.parse(localStorage.getItem(key))}catch(e){return null}}
 function save(){if(practice)return;try{localStorage.setItem(storeKey,JSON.stringify({g:guesses}))}catch(e){}}
-function total(){return guesses.reduce(function(s,g){return s+g.sc},0)}
+function total(){return guesses.reduce(function(s,g){return s+g.sc*(g.m||1)},0)}
 function cur(){return Q[qs[qi]]}
 function start(seed,isPractice){
   practice=isPractice;seedKey=seed;qs=isPractice?pick(seed):dailyPick(seed);qi=0;guesses=[];finished=false;pending=null;shown=[];locked=false;
-  storeKey="gdar3:"+seed;
+  storeKey=(pro?"gdarpro:":"gdar3:")+seed;
   if(!practice){
     var st=load(storeKey);
     if(st&&Array.isArray(st.g)&&st.g.length<=5){guesses=st.g;qi=guesses.length}
@@ -642,9 +657,22 @@ function newQuestion(){
   $("#hint").hidden=false;
   render();resetView();
 }
+var curG=null;
+function bonusOpts(qIdx){
+  var b=BONUS[qIdx],o=[0,1,2,3],s=(qIdx*2654435761)%4294967296||7;
+  for(var i=3;i>0;i--){s=(s*1103515245+12345)%2147483648;var j=s%(i+1),x=o[i];o[i]=o[j];o[j]=x}
+  return{q:b[0],opts:o.map(function(k){return b[k+1]}),ok:o.indexOf(0)};
+}
+function answerBonus(i){
+  if(!pro||!curG||guesses[qi])return;
+  var bo=bonusOpts(qs[qi]),prev=guesses.length?(guesses[guesses.length-1].s||0):0,ok=i===bo.ok;
+  curG.b=i;curG.ok=ok;curG.s=ok?prev+1:0;curG.m=ok?Math.pow(2,curG.s):1;
+  guesses.push(curG);curG=null;save();render();
+}
 function confirmGuess(){
   var q=cur(),a=[q[4],q[3]],km=hav(pending,a),sc=scoreOf(km,q);
-  guesses.push({g:pending,km:km,sc:sc});save();
+  var gg={g:pending,km:km,sc:sc};
+  if(pro){curG=gg}else{guesses.push(gg);save()}
   locked=true;shown=[{g:pending,a:a}];
   render();focusOn([pending,a]);
 }
@@ -677,32 +705,45 @@ function renderQuestion(){
   var q=cur(),sp=SPORTS[q[0]],lab=q[6]?sp.n+" · "+q[6]:sp.n;
   var h='<div class="tagrow"><span class="dot" style="--c:'+sp.c+'"></span><span>'+lab+'</span><span class="qn">'+LEVELS[qi]+' · '+(qi+1)+' / 5</span></div><div class="qrow'+'">'+ico(q[0],"big")+'<p class="q">'+q[1]+'</p></div>';
   if(locked){
-    var g=guesses[qi];
-    h+='<div class="reveal"><div class="place">'+q[2]+'</div><div class="stats"><span class="pts" style="color:'+BANDC[band(g.sc)]+'">+'+nf(g.sc)+'</span><span class="km">'+(g.km<1?"menos de 1":nf(g.km))+' km del lugar</span></div><p class="fact">'+q[5]+'</p></div>';
+    var g=guesses[qi]||curG,answered=!!guesses[qi],m=g.m||1;
+    h+='<div class="reveal"><div class="place">'+q[2]+'</div><div class="stats"><span class="pts" style="color:'+BANDC[band(g.sc)]+'">+'+nf(g.sc*m)+'</span>'+(pro&&answered&&m>1?'<span class="mult">'+nf(g.sc)+' × '+m+'</span>':'')+'<span class="km">'+(g.km<1?"menos de 1":nf(g.km))+' km del lugar</span></div>';
+    if(pro){
+      var bo=bonusOpts(qs[qi]),pv=guesses.length-(answered?1:0),ps=pv>0?(guesses[pv-1].s||0):0;
+      h+='<div class="bonus"><div class="bq"><b>Bonus ×'+Math.pow(2,ps+1)+'</b> '+bo.q+'</div><div class="opts">';
+      bo.opts.forEach(function(o,k){
+        var c="opt";if(answered){if(k===bo.ok)c+=" good";else if(k===g.b)c+=" bad"}
+        h+='<button type="button" class="'+c+'" data-i="'+k+'"'+(answered?' disabled':'')+'>'+o+'</button>';
+      });
+      h+='</div>'+(answered?'<div class="bres">'+(g.ok?'¡Bien! Racha de '+g.s+': puntos ×'+g.m:'Incorrecto: se corta la racha, puntos ×1')+'</div>':'')+'</div>';
+    }
+    if(!pro||answered)h+='<p class="fact">'+q[5]+'</p>';
+    h+='</div>';
   }
   $("#card").innerHTML=h;
+  [].forEach.call(document.querySelectorAll("#card .opt"),function(b){b.onclick=function(){answerBonus(+b.getAttribute("data-i"))}});
 }
 var shareText="";
 function renderResults(){
   var t=total(),sq="",rows="";
   guesses.forEach(function(g,i){
     var q=Q[qs[i]],sp=SPORTS[q[0]];sq+=BANDE[band(g.sc)];
-    rows+='<div class="row">'+ico(q[0],"sm")+'<span class="pl">'+(i+1)+'. '+q[2]+'</span><span class="kp"><b>'+nf(g.sc)+'</b><br>'+(g.km<1?"<1":nf(g.km))+' km</span></div>';
+    rows+='<div class="row">'+ico(q[0],"sm")+'<span class="pl">'+(i+1)+'. '+q[2]+'</span><span class="kp"><b>'+nf(g.sc*(g.m||1))+'</b>'+(pro&&g.m>1?' <i class="xm">×'+g.m+'</i>':'')+'<br>'+(g.km<1?"<1":nf(g.km))+' km</span></div>';
   });
   var day=dayIndex(seedKey)+1;
-  shareText="Globazo"+(practice?" (práctica)":" #"+day)+"\n"+sq+"\n"+nf(t)+" / 25.000\n¿Ya hiciste el Globazo de hoy?";
-  $("#card").innerHTML='<div class="tagrow"><span>Resultado de la ronda</span></div><div class="total"><b>'+nf(t)+'</b><span>de 25.000</span></div><div class="rows">'+rows+'</div>'+(RANK_ON&&seedKey===today()?'<button type="button" class="secondary" id="goRank">Ver ranking del día</button>':'')+'<a class="cross" href="/strands.html">Ahora jugá el Strands de hoy →</a>'+pastHTML()+'<p class="ask">¿Ya hiciste el Globazo de hoy?</p><pre class="share" id="share">'+shareText+'</pre><div class="btnrow social"><a id="shX" href="https://twitter.com/intent/tweet?text='+encodeURIComponent(shareText)+'" target="_blank" rel="noopener">Twitter / X</a><a id="shIG" href="https://www.instagram.com/" target="_blank" rel="noopener">Instagram</a><a id="shTT" href="https://www.tiktok.com/" target="_blank" rel="noopener">TikTok</a></div><p class="note" id="shnote">Twitter / X abre con el texto listo. En Instagram y TikTok el texto se copia y lo pegás en tu historia o video.</p>';bindShare();
+  var mx=guesses.reduce(function(a,g){return Math.max(a,g.m||1)},1);
+  shareText=pro?"Globazo Pro #"+day+"\n"+sq+"\n"+nf(t)+" pts · racha máx. ×"+mx+"\n¿Ya hiciste el Globazo de hoy?":"Globazo #"+day+"\n"+sq+"\n"+nf(t)+" / 25.000\n¿Ya hiciste el Globazo de hoy?";
+  $("#card").innerHTML='<div class="tagrow"><span>Resultado de la ronda</span></div><div class="total"><b>'+nf(t)+'</b><span>'+(pro?"puntos con bonus":"de 25.000")+'</span></div><div class="rows">'+rows+'</div>'+(RANK_ON&&seedKey===today()?'<button type="button" class="secondary" id="goRank">Ver ranking del día</button>':'')+'<a class="cross" href="/strands.html">Ahora jugá el Strands de hoy →</a>'+pastHTML()+'<p class="ask">¿Ya hiciste el Globazo de hoy?</p><pre class="share" id="share">'+shareText+'</pre><div class="btnrow social"><a id="shX" href="https://twitter.com/intent/tweet?text='+encodeURIComponent(shareText)+'" target="_blank" rel="noopener">Twitter / X</a><a id="shIG" href="https://www.instagram.com/" target="_blank" rel="noopener">Instagram</a><a id="shTT" href="https://www.tiktok.com/" target="_blank" rel="noopener">TikTok</a></div><p class="note" id="shnote">Twitter / X abre con el texto listo. En Instagram y TikTok el texto se copia y lo pegás en tu historia o video.</p>';bindShare();
 }
 function pastHTML(){
   var td=today(),h='<div class="past"><b>'+(seedKey===td?"Jugá días anteriores":"Otros días")+'</b><div class="chips">';
-  if(seedKey!==td)h+='<a class="chip now" href="/globazo.html">Volver a hoy</a>';
+  if(seedKey!==td)h+='<a class="chip now" href="/globazo.html'+(pro?"?pro=1":"")+'">Volver a hoy</a>';
   var n=0;
   for(var i=1;i<=14;i++){
     var k=new Date(Date.parse(td)-864e5*i).toISOString().slice(0,10);
     if(k<EPOCH)break;n++;
-    var s=load("gdar3:"+k),ok=s&&s.g&&s.g.length>=5,pts=ok?s.g.reduce(function(a,g){return a+g.sc},0):0;
+    var s=load((pro?"gdarpro:":"gdar3:")+k),ok=s&&s.g&&s.g.length>=5,pts=ok?s.g.reduce(function(a,g){return a+g.sc*(g.m||1)},0):0;
     var lab=new Intl.DateTimeFormat("es-AR",{timeZone:"UTC",weekday:"short",day:"numeric",month:"numeric"}).format(new Date(Date.parse(k)));
-    h+='<a class="chip'+(ok?" ok":"")+(k===seedKey?" cur":"")+'" href="/globazo.html?d='+k+'">'+lab+(ok?' · '+nf(pts):'')+'</a>';
+    h+='<a class="chip'+(ok?" ok":"")+(k===seedKey?" cur":"")+'" href="/globazo.html?d='+k+(pro?"&pro=1":"")+'">'+lab+(ok?' · '+nf(pts):'')+'</a>';
   }
   if(!n)return'';
   return h+'</div></div>';
@@ -726,7 +767,8 @@ function renderBtn(){
     return;
   }
   var ex=$("#extra");if(ex)ex.remove();
-  if(locked){b.disabled=false;b.textContent=qi>=4?"Ver resultados":"Siguiente pregunta";b.onclick=next}
+  if(locked&&pro&&!guesses[qi]){b.disabled=true;b.textContent="Respondé la pregunta bonus";b.onclick=null}
+  else if(locked){b.disabled=false;b.textContent=qi>=4?"Ver resultados":"Siguiente pregunta";b.onclick=next}
   else if(pending){b.disabled=false;b.textContent="Confirmar";b.onclick=confirmGuess}
   else{b.disabled=true;b.textContent="Tocá el mapa para marcar";b.onclick=null}
 }
@@ -750,7 +792,7 @@ function rpc(fn,args){
 function auth(){return{p_id:player.id,p_secret:player.secret}}
 function esc(t){return String(t).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
 function submitToday(){
-  if(!RANK_ON||!player||!finished||practice||seedKey!==today())return;
+  if(!RANK_ON||!player||!finished||practice||pro||seedKey!==today())return;
   var day=dayIndex(seedKey),key="gdar-sub2:"+day;
   try{if(localStorage.getItem(key))return}catch(e){}
   var a=auth();a.p_day=day;a.p_total=total();
@@ -852,6 +894,7 @@ if(RANK_ON){
 
 if(!TOPO){$("#hint").textContent="No se pudo cargar el mapa."}
 resize();
+var pro=/[?&]pro=1/.test(location.search);
 var qd=(location.search.match(/[?&]d=(\d{4}-\d{2}-\d{2})/)||[])[1];
 if(!(qd&&qd<today()&&qd>=EPOCH))qd=null;
 start(qd||today(),false);
@@ -859,6 +902,8 @@ start(qd||today(),false);
 /* ---------- Portada ---------- */
 (function(){
   if(finished)$("#introNote").textContent="Ya jugaste la ronda de hoy. Tocá JUGAR para ver tu resultado.";
+  if(pro){var pt=$("#protag");pt.hidden=false;$("#proNote").innerHTML="<b>Modo Pro:</b> después de cada punto en el mapa hay una pregunta bonus del mismo tema. Si acertás, tus puntos se multiplican ×2; si acertás seguido, ×4, ×8, ×16... Si fallás, se corta la racha. <a class='altlink' href='/globazo.html'>Jugar el Globazo normal</a>";var k1=document.querySelector("#intro .kicker");if(k1)k1.textContent="Globazo Pro: acertá y multiplicá."}
+  else $("#proNote").innerHTML="¿Querés más desafío? <a class='altlink' href='/globazo.html?pro=1'>Probá el Globazo Pro</a> y multiplicá tus puntos.";
   function enter(){$("#intro").hidden=true;$("#game").hidden=false;resize();if(finished)draw(false)}
   $("#play").onclick=enter;
   if(qd||(typeof invite!=="undefined"&&invite&&RANK_ON))enter();
